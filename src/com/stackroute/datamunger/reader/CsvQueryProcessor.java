@@ -9,8 +9,8 @@ import com.stackroute.datamunger.query.DataTypeDefinitions;
 import com.stackroute.datamunger.query.Header;
 
 public class CsvQueryProcessor extends QueryProcessingEngine {
-	public static BufferedReader bufferedReader = null;
-	public static Header header = null;
+	public BufferedReader bufferedReader = null;
+	public Header header = null;
 
 	// Parameterized constructor to initialize filename
 	public CsvQueryProcessor(String fileName) throws FileNotFoundException {
@@ -48,7 +48,7 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 		try {
 			dataRow = bufferedReader.readLine();
 		} catch (IOException ioexception) {
-			System.out.println("ioexception in getDataRow");
+			//System.out.println("ioexception in getDataRow");
 		}
 		return dataRow;
 	}
