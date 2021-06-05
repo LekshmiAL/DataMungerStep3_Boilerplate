@@ -11,6 +11,7 @@ import com.stackroute.datamunger.query.Header;
 public class CsvQueryProcessor extends QueryProcessingEngine {
 	public BufferedReader bufferedReader = null;
 	public Header header = null;
+	String dataRow ="";
 
 	// Parameterized constructor to initialize filename
 	public CsvQueryProcessor(String fileName) throws FileNotFoundException {
@@ -42,15 +43,12 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 	 */
 	
 	@Override
-	public String getDataRow() {
-		//first data row
-		String dataRow ="";
+	public void getDataRow() {
 		try {
 			dataRow = bufferedReader.readLine();
 		} catch (IOException ioexception) {
 			//System.out.println("ioexception in getDataRow");
 		}
-		return dataRow;
 	}
 
 	/*
@@ -65,7 +63,9 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 	
 	@Override
 	public DataTypeDefinitions getColumnType() throws IOException {
-		String dataRow = getDataRow();
+		if(dataRow.isBlank()){
+			getDataRow();
+		}
 		String value = "";
 		String dataType = "";
 		String[] dataStringArray = dataRow.split(",");
