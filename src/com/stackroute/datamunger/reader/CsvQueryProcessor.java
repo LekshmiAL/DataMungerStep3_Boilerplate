@@ -1,16 +1,20 @@
 package com.stackroute.datamunger.reader;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 import com.stackroute.datamunger.query.DataTypeDefinitions;
 import com.stackroute.datamunger.query.Header;
 
 public class CsvQueryProcessor extends QueryProcessingEngine {
+	public static BufferedReader bufferedReader = null;
+	public static Header header = null;
 
 	// Parameterized constructor to initialize filename
 	public CsvQueryProcessor(String fileName) throws FileNotFoundException {
-
+		bufferedReader = new BufferedReader(new FileReader(fileName));		
 	}
 
 	/*
@@ -21,20 +25,32 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 	
 	@Override
 	public Header getHeader() throws IOException {
-
-		// read the first line
-
-		// populate the header object with the String array containing the header names
-		return null;
+		String[] headerNames =  null;
+		if(header == null) {
+			// read the first line
+			String headerLine = bufferedReader.readLine();
+			headerNames = headerLine .split(",");
+			// populate the header object with the String array containing the header names
+			header = new Header(headerNames);
+		}
+		return header;
 	}
 
 	/**
 	 * getDataRow() method will be used in the upcoming assignments
+	 * @return 
 	 */
 	
 	@Override
-	public void getDataRow() {
-
+	public String getDataRow() {
+		//first data row
+		String dataRow ="";
+		try {
+			dataRow = bufferedReader.readLine();
+		} catch (IOException ioexception) {
+			System.out.println("ioexception in getDataRow");
+		}
+		return dataRow;
 	}
 
 	/*
@@ -49,7 +65,36 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 	
 	@Override
 	public DataTypeDefinitions getColumnType() throws IOException {
-
-		return null;
+		String dataRow = getDataRow();
+		String value = "";
+		String dataType = "";
+		String[] dataStringArray = dataRow.split(",");
+		String[] dataTypes = new String[header.getHeaders().length];
+		//to find the datatype
+		for(int row = 0;row<dataStringArray.length;row++) {
+			value = dataStringArray[row];
+			try {
+				Integer.parseInt(value);
+				dataType = "java.lang.Integer";
+			}catch(NumberFormatException intNumFormatEx) {
+				try {
+					Double.parseDouble(value);
+					dataType = "java.lang.Double";
+				}catch(NumberFormatException doubleNumFormatEx){
+					dataType = "java.lang.String";
+				}
+			}finally {
+				dataTypes[row] = dataType;
+			}
+		}
+		int index = 0;
+		for(String type:dataTypes) {
+			if(type == null || type.isBlank()) {
+				dataTypes[index] = "java.lang.String";
+			}
+			index++;
+		}
+		DataTypeDefinitions dataTypeDef = new DataTypeDefinitions(dataTypes);
+		return dataTypeDef;
 	}
 }
